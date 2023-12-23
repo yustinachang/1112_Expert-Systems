@@ -1,4 +1,4 @@
-Expert Systems(1112_54021 in NCUE)
+Course: 專家系統 / Expert Systems (1112_54021 in NCUE)
 
 Instructor: 賴聯福
 
