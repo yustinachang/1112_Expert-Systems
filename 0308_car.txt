@@ -1,0 +1,51 @@
+(deftemplate car (slot type))
+(deftemplate car-trouble (slot proublem))
+
+(defrule car-type-A-1
+	(car-trouble (proublem noise-when-brake))
+	=>
+	(assert (car (type A)))
+)
+(defrule car-type-A-2
+	(car-trouble (proublem noise-from-tire))
+	=>
+	(assert (car (type A)))
+)
+(defrule car-type-B-1
+	(car-trouble (proublem water-thermometer-H))
+	=>
+	(assert (car (type B)))
+)
+(defrule car-type-B-2
+	(car-trouble (proublem water-leak))
+	=>
+	(assert (car (type B)))
+)
+(defrule car-type-C-1
+	(car-trouble (proublem noise-from-engine-room))
+	=>
+	(assert (car (type C)))
+)
+(defrule car-type-D-1
+	(car-trouble (proublem engine-cannot-catch))
+	=>
+	(assert (car (type D)))
+) 
+
+
+(defrule deal-with-type-A (car (type A))
+	=>
+	(printout t "check brake pedal and oil" crlf)
+)
+(defrule deal-with-type-B (car (type B))
+	=>
+	(printout t "repair the water tank or add water" crlf)
+)
+(defrule deal-with-type-C (car (type C))
+	=>
+	(printout t "change the engine belt" crlf)
+)
+(defrule deal-with-type-D (car (type D))
+	=>
+	(printout t "replace or charge a car battery" crlf)
+)

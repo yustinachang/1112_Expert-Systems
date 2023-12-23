@@ -1,0 +1,94 @@
+(deftemplate sort (slot super) (slot sub))
+(deftemplate relationship (multislot sort01) (multislot sort02))
+
+(deffacts initial
+   (sort (super Mammalia) (sub Primates))
+   (sort (super Mammalia) (sub Artiodactyla))
+   (sort (super Mammalia) (sub Rodentia))
+   (sort (super Primates) (sub Cercopithecidae))
+   (sort (super Primates) (sub Hominoidea))
+   (sort (super Artiodactyla) (sub Cervidae))
+   (sort (super Artiodactyla) (sub Bovidae))
+   (sort (super Rodentia) (sub Sciuridae))
+   (sort (super Cercopithecidae) (sub Macaca))
+   (sort (super Cercopithecidae) (sub Papio))
+   (sort (super Cercopithecidae) (sub Mandrillus))
+   (sort (super Hominoidea) (sub Pongo))
+   (sort (super Hominoidea) (sub Pan))
+   (sort (super Hominoidea) (sub Homo))
+   (sort (super Cervidae) (sub Rangifer))
+   (sort (super Cervidae) (sub Elaphurus))
+   (sort (super Bovidae) (sub Bison))
+   (sort (super Bovidae) (sub Bubalus))
+   (sort (super Sciuridae) (sub Tamias))
+   (sort (super Macaca) (sub Sylvanus))
+   (sort (super Macaca) (sub Cyclopis))
+   (sort (super Papio) (sub Anubis))
+   (sort (super Papio) (sub Ursinus))
+   (sort (super Mandrillus) (sub Sphinx))
+   (sort (super Mandrillus) (sub Leucophaeus))
+   (sort (super Pongo) (sub Pygmaeus))
+   (sort (super Pongo) (sub Abelii))
+   (sort (super Pan) (sub Troglodytes))
+   (sort (super Pan) (sub Paniscus))
+   (sort (super Homo) (sub Sapiens))
+   (sort (super Rangifer) (sub Tarandus))
+   (sort (super Rangifer) (sub Caribou))
+   (sort (super Elaphurus) (sub Davidianus))
+   (sort (super Bison) (sub Athabascae))
+   (sort (super Bison) (sub Bonasus))
+   (sort (super Bubalus) (sub Arnee))
+   (sort (super Tamias) (sub Ochrogenys))
+   (phase input)
+)
+
+(defrule input
+	(phase input)
+	=>
+	(printout t "Enter sort #1: ")
+	(bind ?input1 (read))
+	(printout t "Enter sort #2: ")
+	(bind ?input2 (read))
+	(assert (relationship (sort01 ?input1) (sort02 ?input2)))
+)
+
+(defrule rule-sort01
+	(phase input)
+	?t <- (relationship (sort01 ?sub1 $?s1) (sort02 $?))
+	(sort (super ?super1) (sub ?sub1))
+	=>
+	(modify ?t (sort01 ?super1 ?sub1 $?s1))
+)
+
+(defrule rule-sort02
+	(phase input)
+	?t <- (relationship (sort01 $?) (sort02 ?sub2 $?s2))
+	(sort (super ?super2) (sub ?sub2))
+	=>
+	(modify ?t (sort02 ?super2 ?sub2 $?s2))
+)
+
+(defrule change-phase
+	(declare (salience -10))
+	?t <- (phase input)
+	=>
+	(retract ?t)
+	(assert (phase erase))
+)
+
+(defrule rule-delete
+	(phase erase)
+	?t <- (relationship (sort01 ?sub $?s1) (sort02 ?sub $?s2))
+	=>
+	(modify ?t (sort01 $?s1) (sort02 $?s2))
+)
+
+(defrule end
+	(declare (salience -100))
+	?t1 <- (phase erase)
+	?t2 <- (relationship (sort01 $?sort01) (sort02 $?sort02))
+	=>
+	(retract ?t1 ?t2)
+	(printout t "The relationship distance is " (+ (length$ $?sort01) (length$ $?sort02)) crlf)
+	(assert (phase input))
+)

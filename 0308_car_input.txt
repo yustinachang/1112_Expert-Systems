@@ -1,0 +1,3 @@
+(assert (malfunction (situation noise-when-brake)))
+(assert (malfunction (situation noise-from-tire)))
+(assert (malfunction (situation water-leak)))

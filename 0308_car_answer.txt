@@ -1,0 +1,45 @@
+(deftemplate malfunction (multslot situatioon))
+(deftemplate problem (slot type))
+
+(defrule type-A-1
+	(malfunction (situation noise-when-brake))
+	=>
+	(assert (problem (type A))))
+(defrule type-A-2
+	(malfunction (situation noise-from-tire))
+	=>
+	(assert (problem (type A))))
+
+(defrule type-B-1
+	(malfunction (situation water-thermometer-H))
+	=>
+	(assert (problem (type B))))
+
+(defrule type-B-2
+		(malfunction (situation water-leak))
+	=>
+	(assert (problem (type B))))
+
+(defrule type-C
+	(malfunction (situation noise-from-engine-room))
+	=>
+	(assert (problem (type C))))
+
+(defrule type-D
+	(malfunction (situation engine-cannot-catch))
+	=>
+	(assert (problem (type D)))) 
+
+
+(defrule deal-with-type-A (problem (type A))
+	=>
+	(printout t "check brake pedal and oil" crlf))
+(defrule deal-with-type-B (problem (type B))
+	=>
+	(printout t "repair the water tank or add water" crlf))
+(defrule deal-with-type-C (problem (type C))
+	=>
+	(printout t "change the engine belt" crlf))
+(defrule deal-with-type-D (problem (type D))
+	=>
+	(printout t "replace or charge a malfunction battery" crlf))

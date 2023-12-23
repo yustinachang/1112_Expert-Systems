@@ -1,0 +1,23 @@
+(deftemplate data (multislot numbers))
+
+(defrule read-date
+	(declare (salience 100))
+	=>
+	(printout t "Data sorting: ")
+	(bind ?input (explode$ (readline)))
+	(assert (data (numbers ?input)))
+)
+
+(defrule rule
+	?t <- (data (numbers $?x1 ?n1 ?n2 $?x2 &:(> ?n1 ?n2)))
+	=>
+	(modify ?t (numbers $?x1 ?n2 ?n1 $?x2))
+)
+
+(defrule end
+	(declare (salience -100))
+	?t <- (data (numbers $?s))
+	=>
+	(retract ?t)
+	(printout t "The result is " (implode$ $?s) crlf)
+)
