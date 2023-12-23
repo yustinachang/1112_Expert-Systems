@@ -1,0 +1,49 @@
+(deftemplate sales (slot id) (multislot items))
+(deftemplate record (slot id) (multislot pair))
+(deftemplate combination (multislot pair) (slot number))
+
+(defrule assert-data
+	(declare (salience 10))
+	=>
+	(load-facts "sales-03.txt")
+	(open "result.txt" out "w")
+)
+
+(defrule assert-record-and-combination
+	(sales (id ?id) (items $? ?item1 $? ?item2 $?))
+	=>
+	(assert (record (id ?id) (pair ?item1 ?item2)))
+	(assert (combination (pair ?item1 ?item2) (number 0)))
+)
+
+(defrule add-number
+	(declare (salience -10))
+	?t1 <- (record (id ?) (pair $?pair))
+	?t2 <- (combination (pair $?pair) (number ?n))
+	=>
+	(retract ?t1 ?t2)
+	(assert (combination (pair $?pair) (number (+ ?n 1))))
+)
+
+(defrule max-number
+	(declare (salience -20))
+	?t1 <- (combination (pair $?) (number ?n1))
+	?t2 <- (combination (pair $?) (number ?n2))
+	(test (> ?n1 ?n2))
+	=>
+	(retract ?t2)
+)
+
+(defrule output-result
+	(declare (salience -30))
+	?t <- (combination (pair ?item1 ?item2) (number ?n))
+	=>
+	(retract ?t)
+	(printout out "(" ?item1 "," ?item2 "):" ?n crlf)
+)
+
+(defrule end
+	(declare (salience -40))
+	=>
+	(close out)
+)

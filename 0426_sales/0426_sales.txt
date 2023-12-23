@@ -1,0 +1,72 @@
+(deftemplate sales (slot id) (multislot items))
+(deftemplate record (slot id) (multislot pair))
+(deftemplate combination (multislot pair) (slot number))
+
+(deffacts initial (phase load-data))
+
+(defrule assert-data
+	(phase load-data)
+	=>
+	(load-facts "sales-03.txt")
+	(open "result.txt" out "w")
+)
+
+(defrule assert-record-and-combination
+	(phase load-data)
+	(sales (id ?id) (items $? ?item1 $? ?item2 $?))
+	=>
+	(assert (record (id ?id) (pair ?item1 ?item2)))
+	(assert (combination (pair ?item1 ?item2) (number 0)))
+)
+
+(defrule change-phase-1
+	(declare (salience -10))
+	?t <- (phase load-data)
+	=>
+	(retract ?t)
+	(assert (phase count-number))
+)
+
+(defrule add-number
+	(phase count-number)
+	?t1 <- (record (id ?) (pair $?pair))
+	?t2 <- (combination (pair $?pair) (number ?n))
+	=>
+	(retract ?t1 ?t2)
+	(assert (combination (pair $?pair) (number (+ ?n 1))))
+)
+
+(defrule change-phase-2
+	(declare (salience -20))
+	?t <- (phase count-number)
+	=>
+	(retract ?t)
+	(assert (phase find-max))
+)
+
+(defrule max-number
+	(phase find-max)
+	?t1 <- (combination (pair $?) (number ?n1))
+	?t2 <- (combination (pair $?) (number ?n2))
+	(test (> ?n1 ?n2))
+	=>
+	(retract ?t2)
+)
+
+(defrule output-result
+	(declare (salience -30))
+	(phase find-max)
+	?t <- (combination (pair ?item1 ?item2) (number ?n))
+	=>
+	(retract ?t)
+	(printout out "(" ?item1 "," ?item2 "):" ?n crlf)
+)
+
+(defrule end
+	(declare (salience -40))
+	?t <- (phase find-max)
+	=>
+	(retract ?t)
+	(close out)
+)
+	

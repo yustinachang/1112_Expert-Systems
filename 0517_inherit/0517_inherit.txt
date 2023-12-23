@@ -1,0 +1,71 @@
+(deftemplate relative (slot parent) (multislot child))
+(deftemplate person (slot name) (slot gender) (slot alive) (slot after2013))
+(deftemplate inheritance (multislot priority))
+
+(deffacts initial (phase load-data))
+
+(defrule assert-data
+	(phase load-data)
+	=>
+	(load-facts "inheritance-2.txt")
+)
+
+(defrule rule-M-F
+	(phase load-data)
+	?f <- (relative (parent ?) (child $?c1 ?cf ?cm $?c2))
+	(person (name ?cf) (gender F) (alive ?) (after2013 no))
+	(person (name ?cm) (gender M) (alive ?) (after2013 no))
+	=>
+	(modify ?f (child $?c1 ?cm ?cf $?c2))
+)
+
+(defrule change-to-phase-1
+	(declare (salience -10))
+	?t <- (phase load-data)
+	(king-or-queen ?k)
+	(relative (parent ?) (child $?c1 ?k $?c2))
+	=>
+	(retract ?t)
+	(assert (phase phase-1))
+	(assert (inheritance (priority ?k $?c1 $?c2)))
+)
+
+(defrule add-children
+	(phase phase-1)
+	?f1 <- (inheritance (priority $?p1 ?p $?p2))
+	?f2 <- (relative (parent ?p) (child $?c))
+	=>
+	(modify ?f1 (priority $?p1 ?p $?c $?p2))
+	(retract ?f2)
+)
+
+(defrule change-to-phase-2
+	(declare (salience -10))
+	?t <- (phase phase-1)
+	?f <- (inheritance (priority ?p $?p2))
+	=>
+	(retract ?t)
+	(assert (phase phase-2))
+	(modify ?f (priority $?p2))
+	(assert (number 1))
+)
+
+(defrule delete-unalive
+	(phase phase-2)
+	?f <- (inheritance (priority $?p1 ?p $?p2))
+	(person (name ?p) (gender ?) (alive no) (after2013 ?))
+	=>
+	(modify ?f (priority $?p1 $?p2))
+)
+
+(defrule output
+	(declare (salience -10))
+	(phase phase-2)
+	?f1 <- (number ?n)
+	?f2 <- (inheritance (priority ?p $?p2))
+	=>
+	(printout t ?n":"?p crlf)
+	(retract ?f1 ?f2)
+	(assert (number (+ ?n 1)))
+	(assert (inheritance (priority $?p2)))
+)
