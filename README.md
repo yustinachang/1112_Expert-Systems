@@ -5,7 +5,7 @@ Instructor: 賴聯福
 
 https://webapt.ncue.edu.tw/DEANV2/UploadDEAN/SUBJECT/1112/54021_1EICS2153630.pdf
 
-| date | course_work | Submit |
+| Date | Course Work | Submit |
 | -----| ---- | ---- |
 | 0308 | car | ontime |
 | 0315 | parent | ontime |
