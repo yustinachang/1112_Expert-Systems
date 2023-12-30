@@ -1,4 +1,4 @@
-# 1112_54021_Expert-Systems
+# 1112_Expert-Systems
 Course: 專家系統 / Expert Systems (1112_54021 in NCUE)
 [pdf](https://webapt.ncue.edu.tw/DEANV2/UploadDEAN/SUBJECT/1112/54021_1EICS2153630.pdf)
 
